@@ -85,13 +85,13 @@ steps <- act$steps2
 date <- act$date
 interval <- act$interval
 act2 <- data.frame(steps, date, interval)
-head(act)
+head(act2)
 ```
 
 Fourth, we create a histogram of the total number of steps taken each day...
 ```{r plot_newdailysteps, echo=TRUE}
-act2$daily_steps <- tapply(act2$steps, act2$date, sum)
-hist(act2$dailysteps, breaks=10, col="blue", 
+daily_steps <- tapply(act2$steps, act2$date, sum)
+hist(daily_steps, breaks=10, col="blue", 
 	main="Histogram of Steps Taken per Day", xlab = "Average Number of Steps")
 ```
 
@@ -99,18 +99,18 @@ hist(act2$dailysteps, breaks=10, col="blue",
 taken per day.
 
 ```{r, echo=TRUE}
-mean(act2$daily_steps)
+mean(daily_steps)
 ```
 
 ```{r, echo=TRUE}
-median(act2$daily_steps)
+median(daily_steps)
 ```
 
 These numbers differ from our results earlier in the assignment. 
 Replacing the original missing values with imputed values based on the
 average activity at the time interval of the missing value substantially
 raised both the mean and median daily steps: the mean went up from 9354 to 
-10765 and the median rose from 10395 to 10762. 
+10766 and the median rose from 10395 to 10762. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -127,7 +127,15 @@ interval and the average number of steps taken, averaged across weekdays or
 weekend days.
 
 ```{r plot_weekday, echo=TRUE}
-par(mfcol=c(2,1))
-plot(act2$week)
+int_wk_steps <- aggregate(act2$steps, by=list(act2$interval, act2$week), mean)
+
+library(lattice)
+xyplot(int_wk_steps$x ~ int_wk_steps$Group.1 | int_wk_steps$Group.2, 
+	type="l", layout=c(1,2), 
+	main="Avg steps over the course of the day on Weekend v. Weekday", 
+	ylab="Steps per interval", xlab="Interval")
 ```
 
+There are differences in activity patterns on weekends versus weekdays: this 
+person is more consistently active over the course of the day on weekends than
+on weekdays, when his activity spikes in the morning and then is fairly low the rest of the day.

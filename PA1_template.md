@@ -140,37 +140,35 @@ steps <- act$steps2
 date <- act$date
 interval <- act$interval
 act2 <- data.frame(steps, date, interval)
-head(act)
+head(act2)
 ```
 
 ```
-##   steps       date interval interval_steps steps2 round_int_steps
-## 1    NA 2012-10-01        0        1.71698      2               2
-## 2    NA 2012-10-01        5        0.33962      0               0
-## 3    NA 2012-10-01       10        0.13208      0               0
-## 4    NA 2012-10-01       15        0.15094      0               0
-## 5    NA 2012-10-01       20        0.07547      0               0
-## 6    NA 2012-10-01       25        2.09434      2               2
+##   steps       date interval
+## 1     2 2012-10-01        0
+## 2     0 2012-10-01        5
+## 3     0 2012-10-01       10
+## 4     0 2012-10-01       15
+## 5     0 2012-10-01       20
+## 6     2 2012-10-01       25
 ```
 
 Fourth, we create a histogram of the total number of steps taken each day...
 
 ```r
-act2$daily_steps <- tapply(act2$steps, act2$date, sum)
-hist(act2$dailysteps, breaks=10, col="blue", 
+daily_steps <- tapply(act2$steps, act2$date, sum)
+hist(daily_steps, breaks=10, col="blue", 
 	main="Histogram of Steps Taken per Day", xlab = "Average Number of Steps")
 ```
 
-```
-## Error: 'x' must be numeric
-```
+![plot of chunk plot_newdailysteps](figure/plot_newdailysteps.png) 
 
 ... and calculate and report the mean and median total number of steps
 taken per day.
 
 
 ```r
-mean(act2$daily_steps)
+mean(daily_steps)
 ```
 
 ```
@@ -179,7 +177,7 @@ mean(act2$daily_steps)
 
 
 ```r
-median(act2$daily_steps)
+median(daily_steps)
 ```
 
 ```
@@ -190,7 +188,7 @@ These numbers differ from our results earlier in the assignment.
 Replacing the original missing values with imputed values based on the
 average activity at the time interval of the missing value substantially
 raised both the mean and median daily steps: the mean went up from 9354 to 
-10765 and the median rose from 10395 to 10762. 
+10766 and the median rose from 10395 to 10762. 
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
@@ -209,9 +207,17 @@ weekend days.
 
 
 ```r
-par(mfcol=c(2,1))
-plot(act2$week)
+int_wk_steps <- aggregate(act2$steps, by=list(act2$interval, act2$week), mean)
+
+library(lattice)
+xyplot(int_wk_steps$x ~ int_wk_steps$Group.1 | int_wk_steps$Group.2, 
+	type="l", layout=c(1,2), 
+	main="Avg steps over the course of the day on Weekend v. Weekday", 
+	ylab="Steps per interval", xlab="Interval")
 ```
 
 ![plot of chunk plot_weekday](figure/plot_weekday.png) 
 
+There are differences in activity patterns on weekends versus weekdays: this 
+person is more consistently active over the course of the day on weekends than
+on weekdays, when his activity spikes in the morning and then is fairly low the rest of the day.
